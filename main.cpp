@@ -15,7 +15,7 @@ namespace fs = std::filesystem;
 /*
  * Method to remove directory path from the listed files/folders
  */
-std::string parseString(std::string &path, std::__cxx11::basic_string<char> fileName)
+std::string parseString(std::string &path, std::string fileName)
 {
     return fileName.replace(0, path.length() + 1, "");
 }
