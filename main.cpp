@@ -3,11 +3,9 @@
 #include <filesystem>
 #include <iomanip>
 #include <sstream>
-#include <stdio.h>
+#include <cstdio>
 #include <unistd.h>
 #include <cmath>
-
-#define GetCurrentDir getcwd
 
 #define PROGRAM_NAME "pls"
 #define AUTHORS proper_name("Nikhil Adiga")
@@ -28,22 +26,20 @@ std::string parseString(std::string &path, std::__cxx11::basic_string<char> file
  */
 std::string getPresentWorkDirectory()
 {
-    char buff[FILENAME_MAX];
-    GetCurrentDir(buff, FILENAME_MAX);
-    std::string current_working_dir(buff);
-    return current_working_dir;
+    std::string filePath = fs::current_path();
+    return filePath;
 }
 
 
 /*
 * Method to convert bytes to human readable format
 */
-std::string convertSizeToHumanReadable(long double size)
+std::string convertSizeToHumanReadable(std::uintmax_t size)
 {
-    long double b;
-    long double kb;
-    long double mb;
-    long double gb;
+    std::uintmax_t b;
+    std::uintmax_t kb;
+    std::uintmax_t mb;
+    std::uintmax_t gb;
 
     b = size;
     kb = b / 1024;
@@ -72,9 +68,9 @@ std::string convertSizeToHumanReadable(long double size)
 /*
 * Method to get size of files and directories
 */
-long double getSize(std::filesystem::directory_entry entry)
+std::uintmax_t getSize(fs::directory_entry entry)
 {
-    long double fileSize = 0;
+    std::uintmax_t fileSize = 0;
 
     for (const auto &p : fs::recursive_directory_iterator(entry.path()))
     {
@@ -84,7 +80,7 @@ long double getSize(std::filesystem::directory_entry entry)
         }
         else
         {
-            fileSize += std::filesystem::file_size(p.path());
+            fileSize += fs::file_size(p.path());
         }
     }
 
@@ -106,8 +102,7 @@ int main()
             if (fs::is_directory(fs::status(entry.path())))
             {
                 std::cout << " 📁" << std::endl;
-                std::cout << std::setw(10)
-                          << "\x1B[33m"
+                std::cout << "\x1B[33m"
                           << "├── "
                           << convertSizeToHumanReadable(getSize(entry)) << std::endl
                           << std::endl;
@@ -115,11 +110,9 @@ int main()
             else
             {
                 std::cout << std::endl;
-                std::cout << std::setw(10)
-                          << "\x1B[33m"
+                std::cout << "\x1B[33m"
                           << "├── "
-                          << convertSizeToHumanReadable(std::filesystem::file_size(entry.path()))
-                          << std::endl
+                          << convertSizeToHumanReadable(fs::file_size(entry.path()))<< std::endl
                           << std::endl;
             }
         }
